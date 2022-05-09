@@ -1,5 +1,7 @@
 package br.com.guedes.betgreen.security.jwt;
 
+import org.eclipse.microprofile.jwt.Claim;
+import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import javax.annotation.security.PermitAll;
@@ -21,6 +23,10 @@ public class TokenSecuredResource {
     @Inject
     JsonWebToken jwt;
 
+    @Inject
+    @Claim(standard = Claims.birthdate)
+    String birthdate;
+
     @GET
     @Path("permit-all")
     @PermitAll
@@ -35,6 +41,14 @@ public class TokenSecuredResource {
     @Produces(MediaType.TEXT_PLAIN)
     public String helloRolesAllowed(@Context SecurityContext ctx) {
         return getResponseString(ctx) + ", birthdate: " + jwt.getClaim("birthdate").toString();
+    }
+
+    @GET
+    @Path("roles-allowed-admin")
+    @RolesAllowed("Admin")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String helloRolesAllowedAdmin(@Context SecurityContext ctx) {
+        return getResponseString(ctx) + ", birthdate: " + birthdate;
     }
 
     private String getResponseString(SecurityContext ctx) {
